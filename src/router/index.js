@@ -26,6 +26,7 @@ const loginIgnore = {
 function initRouter(isAsync) {
   const options = isAsync ? require('./async/config.async').default : require('./config').default
   formatRoutes(options.routes)
+  options.mode = 'history'
   return new Router(options)
 }
 export {loginIgnore, initRouter}

@@ -1,19 +1,30 @@
 <template>
   <a-layout :class="['admin-layout', 'beauty-scroll']">
-    <drawer v-if="isMobile" v-model="drawerOpen">
-      <side-menu :theme="theme.mode" :menuData="menuData" :collapsed="false" :collapsible="false" @menuSelect="onMenuSelect"/>
-    </drawer>
-    <side-menu :class="[fixedSideBar ? 'fixed-side' : '']" :theme="theme.mode" v-else-if="layout === 'side' || layout === 'mix'" :menuData="sideMenuData" :collapsed="collapsed" :collapsible="true" />
-    <div v-if="fixedSideBar && !isMobile" :style="`width: ${sideMenuWidth}; min-width: ${sideMenuWidth};max-width: ${sideMenuWidth};`" class="virtual-side"></div>
-    <drawer v-if="!hideSetting" v-model="showSetting" placement="right">
-      <div class="setting" slot="handler">
-        <a-icon :type="showSetting ? 'close' : 'setting'"/>
-      </div>
-      <setting />
-    </drawer>
+    <side-menu
+        :class="[fixedSideBar ? 'fixed-side' : '']"
+        :theme="theme.mode"
+        v-if="layout === 'side'"
+        :menuData="sideMenuData"
+        :collapsed="collapsed"
+        :collapsible="true"
+    />
+    <div
+        v-if="fixedSideBar"
+        :style="`width: ${sideMenuWidth}; min-width: ${sideMenuWidth};max-width: ${sideMenuWidth};`"
+        class="virtual-side"
+    ></div>
     <a-layout class="admin-layout-main beauty-scroll">
-      <admin-header :class="[{'fixed-tabs': fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]" :style="headerStyle" :menuData="headMenuData" :collapsed="collapsed" @toggleCollapse="toggleCollapse"/>
-      <a-layout-header :class="['virtual-header', {'fixed-tabs' : fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]" v-show="fixedHeader"></a-layout-header>
+      <admin-header
+          :class="[{'fixed-tabs': fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]"
+          :style="headerStyle"
+          :menuData="headMenuData"
+          :collapsed="collapsed"
+          @toggleCollapse="toggleCollapse"
+      />
+      <a-layout-header
+          :class="['virtual-header', {'fixed-tabs' : fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]"
+          v-show="fixedHeader"
+      ></a-layout-header>
       <a-layout-content class="admin-layout-content" :style="`min-height: ${minHeight}px;`">
         <div style="position: relative">
           <slot></slot>
@@ -29,22 +40,18 @@
 <script>
 import AdminHeader from './header/AdminHeader'
 import PageFooter from './footer/PageFooter'
-import Drawer from '../components/tool/Drawer'
 import SideMenu from '../components/menu/SideMenu'
-import Setting from '../components/setting/Setting'
 import {mapState, mapMutations, mapGetters} from 'vuex'
 
 // const minHeight = window.innerHeight - 64 - 122
 
 export default {
   name: 'AdminLayout',
-  components: {Setting, SideMenu, Drawer, PageFooter, AdminHeader},
+  components: { SideMenu,  PageFooter, AdminHeader},
   data () {
     return {
       minHeight: window.innerHeight - 64 - 122,
-      collapsed: false,
-      showSetting: false,
-      drawerOpen: false
+      collapsed: false
     }
   },
   provide() {
@@ -58,22 +65,17 @@ export default {
     },
     layout() {
       this.setActivated(this.$route)
-    },
-    isMobile(val) {
-      if(!val) {
-        this.drawerOpen = false
-      }
     }
   },
   computed: {
-    ...mapState('setting', ['isMobile', 'theme', 'layout', 'footerLinks', 'copyright', 'fixedHeader', 'fixedSideBar',
-      'fixedTabs', 'hideSetting', 'multiPage']),
+    ...mapState('setting', ['theme', 'layout', 'footerLinks', 'copyright', 'fixedHeader', 'fixedSideBar',
+      'fixedTabs', 'multiPage']),
     ...mapGetters('setting', ['firstMenu', 'subMenu', 'menuData']),
     sideMenuWidth() {
       return this.collapsed ? '80px' : '256px'
     },
     headerStyle() {
-      let width = (this.fixedHeader && this.layout !== 'head' && !this.isMobile) ? `calc(100% - ${this.sideMenuWidth})` : '100%'
+      let width = (this.fixedHeader && this.layout !== 'head') ? `calc(100% - ${this.sideMenuWidth})` : '100%'
       let position = this.fixedHeader ? 'fixed' : 'static'
       return `width: ${width}; position: ${position};`
     },
@@ -90,9 +92,6 @@ export default {
     ...mapMutations('setting', ['correctPageMinHeight', 'setActivatedFirst']),
     toggleCollapse () {
       this.collapsed = !this.collapsed
-    },
-    onMenuSelect () {
-      this.toggleCollapse()
     },
     setActivated(route) {
       if (this.layout === 'mix') {

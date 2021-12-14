@@ -2,12 +2,13 @@ import config from '@/config'
 import {ADMIN} from '@/config/default'
 import {formatFullPath} from '@/utils/i18n'
 import {filterMenu} from '@/utils/authority-utils'
-import {getLocalSetting} from '@/utils/themeUtil'
 import deepClone from 'lodash.clonedeep'
 
-const localSetting = getLocalSetting(true)
 const customTitlesStr = sessionStorage.getItem(process.env.VUE_APP_TBAS_TITLES_KEY)
 const customTitles = (customTitlesStr && JSON.parse(customTitlesStr)) || []
+
+console.log('customTitles',customTitles)
+console.log('config',config)
 
 export default {
   namespaced: true,
@@ -19,8 +20,7 @@ export default {
     menuData: [],
     activatedFirst: undefined,
     customTitles,
-    ...config,
-    ...localSetting
+    ...config
   },
   getters: {
     menuData(state, getters, rootState) {
