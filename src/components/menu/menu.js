@@ -34,7 +34,7 @@
 import Menu from 'ant-design-vue/es/menu'
 import Icon from 'ant-design-vue/es/icon'
 import fastEqual from 'fast-deep-equal'
-import {getI18nKey} from '@/utils/routerUtil'
+// import {getI18nKey} from '@/utils/routerUtil'
 
 const {Item, SubMenu} = Menu
 
@@ -161,13 +161,15 @@ export default {
         tag = 'a'
         config = {attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;', href: menu.meta.link, target: '_blank'}}
       }
+      console.log(menu.fullPath)
       return h(
         Item, {key: menu.fullPath},
         [
           h(tag, config,
             [
               this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-              this.$t(getI18nKey(menu.fullPath))
+              menu.fullPath.split('/').filter(item => !item.startsWith(':') && item != '')
+              // this.$t(getI18nKey(menu.fullPath))
             ]
           )
         ]
@@ -178,7 +180,8 @@ export default {
       let subItem = [h('span', {slot: 'title', attrs: {style: 'overflow:hidden;white-space:normal;text-overflow:clip;'}},
         [
           this.renderIcon(h, menu.meta ? menu.meta.icon : 'none', menu.fullPath),
-          this.$t(getI18nKey(menu.fullPath))
+          // this.$t(getI18nKey(menu.fullPath))
+          menu.fullPath.split('/').filter(item => !item.startsWith(':') && item != '')
         ]
       )]
       let itemArr = []

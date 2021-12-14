@@ -5,7 +5,6 @@
         <img width="32" src="@/assets/img/logo.png" />
         <h1>{{systemName}}</h1>
       </router-link>
-      <a-divider v-if="isMobile" type="vertical" />
       <a-icon v-if="layout !== 'head'" class="trigger" :type="collapsed ? 'menu-unfold' : 'menu-fold'" @click="toggleCollapse"/>
       <div v-if="layout !== 'side'" class="admin-header-menu" :style="`width: ${menuWidth};`">
         <i-menu class="head-menu" :theme="headerTheme" mode="horizontal" :options="menuData" @select="onSelect"/>
@@ -41,9 +40,9 @@ export default {
     }
   },
   computed: {
-    ...mapState('setting', ['theme', 'isMobile', 'layout', 'systemName', 'lang', 'pageWidth']),
+    ...mapState('setting', ['theme', 'layout', 'systemName', 'lang', 'pageWidth']),
     headerTheme () {
-      if (this.layout == 'side' && this.theme.mode == 'dark' && !this.isMobile) {
+      if (this.layout == 'side' && this.theme.mode == 'dark') {
         return 'light'
       }
       return this.theme.mode
@@ -62,6 +61,9 @@ export default {
   methods: {
     toggleCollapse () {
       this.$emit('toggleCollapse')
+    },
+    onSelect (obj) {
+      this.$emit('menuSelect', obj)
     }
   }
 }
