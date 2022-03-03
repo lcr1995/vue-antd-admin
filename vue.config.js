@@ -1,12 +1,14 @@
 let path = require('path')
 const webpack = require('webpack')
-const ThemeColorReplacer = require('webpack-theme-color-replacer')
+// const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const {getThemeColors, modifyVars} = require('./src/utils/themeUtil')
-const {resolveCss} = require('./src/utils/theme-color-replacer-extend')
+// const {resolveCss} = require('./src/utils/theme-color-replacer-extend')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
 const productionGzipExtensions = ['js', 'css']
 const isProd = process.env.NODE_ENV === 'production'
+
+const UselessFile = require('useless-files-webpack-plugin')
 
 const assetsCDN = {
   // webpack build externals
@@ -57,14 +59,14 @@ module.exports = {
     config.performance = {
       hints: false
     }
-    config.plugins.push(
-      new ThemeColorReplacer({
-        fileName: 'css/theme-colors-[contenthash:8].css',
-        matchColors: getThemeColors(),
-        injectCss: true,
-        resolveCss
-      })
-    )
+    // config.plugins.push(
+    //   new ThemeColorReplacer({
+    //     fileName: 'css/theme-colors-[contenthash:8].css',
+    //     matchColors: getThemeColors(),
+    //     injectCss: true,
+    //     resolveCss
+    //   })
+    // )
     // Ignore all locale files of moment.js
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
     // 生产环境下将资源压缩成gzip格式
@@ -83,6 +85,15 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    config.plugin('uselessFile')
+        .use(
+            new UselessFile({
+              root: path.resolve(__dirname, './src'), // 项目目录
+              out: './fileList.json', // 输出文件列表
+              clean: false, // 是否删除文件,
+              exclude: /node_modules/ // 排除文件列表
+            })
+        )
     // 生产环境下关闭css压缩的 colormin 项，因为此项优化与主题色替换功能冲突
     if (isProd) {
       config.plugin('optimize-css')
